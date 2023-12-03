@@ -1,76 +1,165 @@
 <script>
-    import { element } from "svelte/internal";
     import LessonTree from "./LessonTree.svelte";
-    import YAML from "js-yaml";
+    import yaml from "js-yaml";
+    import ChapterLessonsPanel from "./ChapterLessonsPanel.svelte";
+    import Syllabus from "./Syllabus.svelte";
+    import {
+        parseSyllabusYaml,
+        getChaptersForTree,
+    } from "./parsing/parseSyllabus";
     let lessonTreeComponent;
 
-    function parseToTreeElements(llmOutput) {
+    function parseToTreeElements(llmOutput, chaptersData) {
+        const rootKey = "ChaptersTree";
         try {
-            var newlineCount = (llmOutput.match(/\n/g) || []).length;
+            const newlineCount = (llmOutput.match(/\n/g) || []).length;
             if (newlineCount < 2) {
                 return false;
             }
 
-            var cleanedText = llmOutput.substring(
-                0,
-                llmOutput.lastIndexOf("\n\n") + 1,
-            );
+            var cleanedText = llmOutput;
 
-            const tree = YAML.load(cleanedText);
+            if (cleanedText.lastIndexOf("\n\n") > -1) {
+                cleanedText = cleanedText.substring(
+                    0,
+                    cleanedText.lastIndexOf("\n\n"),
+                );
+            } else {
+                cleanedText = cleanedText.substring(
+                    0,
+                    cleanedText.lastIndexOf("\n"),
+                );
+            }
+
+            cleanedText.trimEnd();
+
+            if (cleanedText.charAt(cleanedText.length - 1) === ":") {
+                cleanedText = cleanedText.substring(
+                    0,
+                    cleanedText.lastIndexOf("\n"),
+                );
+            }
+
+            const tree = yaml.load(cleanedText);
 
             const elements = [];
 
-            for (const lesson in tree.LessonTree) {
-                const prerequisites = tree.LessonTree[lesson];
+            console.log(chaptersData);
+
+            for (const chapter in tree[rootKey]) {
+                const prerequisites = tree[rootKey][chapter];
 
                 elements.push({
                     group: "nodes",
-                    data: { id: lesson },
+                    data: { id: chapter, lessons: chaptersData[chapter] },
                 });
 
                 prerequisites.forEach((prereq) => {
                     elements.push({
                         group: "edges",
-                        data: { source: prereq, target: lesson },
+                        data: { source: prereq, target: chapter },
                     });
                 });
             }
 
             return elements;
         } catch (e) {
-            console.log(llmOutput, e);
+            console.error(llmOutput, "|", cleanedText, e);
             return false;
         }
     }
     let generateTreeXhr = new XMLHttpRequest();
-    function callGenerateTreeEndpoint(prompt) {
+    function callGenerateTreeEndpoint(chaptersData) {
         generateTreeXhr.abort();
         generateTreeXhr = new XMLHttpRequest();
         generateTreeXhr.open(
             "GET",
             "http://127.0.0.1:5000/generate_tree?prompt=" +
-                encodeURIComponent(prompt),
+                encodeURIComponent(yaml.dump(chaptersData)),
             true,
         );
         generateTreeXhr.onprogress = function () {
             console.log(generateTreeXhr.responseText);
-            const elements = parseToTreeElements(generateTreeXhr.responseText);
+            const elements = parseToTreeElements(
+                generateTreeXhr.responseText,
+                chaptersData,
+            );
             if (elements) lessonTreeComponent.update_tree(elements);
         };
         generateTreeXhr.send();
     }
-    let courseNamePrompt = "real analysis";
+    let generateSyllabusXhr = new XMLHttpRequest();
+    function callGenerateSyllabusEndpoint(prompt) {
+        generateSyllabusXhr.abort();
+        generateSyllabusXhr = new XMLHttpRequest();
+        generateSyllabusXhr.open(
+            "GET",
+            "http://127.0.0.1:5000/generate_syllabus?prompt=" +
+                encodeURIComponent(prompt),
+            true,
+        );
+        generateSyllabusXhr.onprogress = function () {
+            // console.log(generateSyllabusXhr.responseText);
+            // const elements = parseToTreeElements(generateTreeXhr.responseText);
+            // if (elements) lessonTreeComponent.update_tree(elements);
+            syllabusText = generateSyllabusXhr.responseText;
+        };
+        generateSyllabusXhr.onreadystatechange = function () {
+            if (generateSyllabusXhr.readyState === XMLHttpRequest.DONE) {
+                if (generateSyllabusXhr.status === 200) {
+                    syllabus = parseSyllabusYaml(syllabusText);
+                    if (syllabus) {
+                        const chaptersPrompt = getChaptersForTree(syllabus);
+                        callGenerateTreeEndpoint(chaptersPrompt);
+                        // lessonTreeComponent.update_tree(chapters);
+                    }
+                } else {
+                    console.log("There was a problem with the request.");
+                }
+            }
+        };
+        generateSyllabusXhr.send();
+    }
+    let courseNamePrompt = "Neural Networks";
+    let syllabusText = "syllabus";
+    let syllabus;
 
-    function generateTree() {
-        callGenerateTreeEndpoint(courseNamePrompt);
+    function generate() {
+        // callGenerateTreeEndpoint(courseNamePrompt);
+        callGenerateSyllabusEndpoint(courseNamePrompt);
+    }
+
+    let selectedChapterData;
+
+    function handleChapterClicked(event) {
+        selectedChapterData = event.detail;
+    }
+
+    function handleClosePanel() {
+        selectedChapterData = null;
     }
 </script>
 
 <main>
-    What do you want to learn?
-    <input type="text" bind:value={courseNamePrompt}/>
-    <button on:click={generateTree}>Generate</button>
-    <LessonTree bind:this={lessonTreeComponent} />
+    <div>
+        What do you want to learn?
+        <input type="text" bind:value={courseNamePrompt} />
+        <button on:click={generate}>Generate</button>
+    </div>
+    <div class="tree-window">
+        <div class="lesson-tree">
+            <LessonTree
+                bind:this={lessonTreeComponent}
+                on:chapterClicked={handleChapterClicked}
+            />
+        </div>
+        {#if selectedChapterData}
+            <div class="chapter-panel">
+                <ChapterLessonsPanel bind:chapterData={selectedChapterData} on:closePanel={handleClosePanel}/>
+            </div>
+        {/if}
+    </div>
+    <Syllabus bind:content={syllabusText} />
 </main>
 
 <style>
@@ -81,7 +170,6 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 100vh;
         margin: 0;
         color: #333;
     }
@@ -106,5 +194,25 @@
 
     button:hover {
         background-color: #0056b3;
+    }
+    .tree-window {
+        display: flex;
+        /* justify-content: space-between; 
+        align-items: start;  */
+        border: red solid 1px;
+        width: 80vw;
+        height: 75vh;
+    }
+
+    .lesson-tree {
+        flex-grow: 2;
+        flex-basis: 0;
+        flex-shrink: 1;
+        overflow: hidden;
+    }
+    .chapter-panel {
+        flex-grow: 1;
+        flex-basis: 0;
+        flex-shrink: 0;
     }
 </style>
