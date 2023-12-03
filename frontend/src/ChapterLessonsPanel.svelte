@@ -1,16 +1,49 @@
 <script>
     import { createEventDispatcher } from "svelte";
+    import { removePrefixes } from "./parsing/parseSyllabus";
+    import LessonModal from "./LessonModal.svelte";
 
     export let chapterData;
+    export let syllabusText;
     $: chapterName = chapterData
         ? chapterData.chapterName
         : "no chapter selected";
     $: lessons = chapterData ? chapterData.lessons : [];
 
+    let chapterIntroXhr = new XMLHttpRequest();
+
+    let chapterIntroText = "";
+
+    $: {
+        if (chapterName && syllabusText) {
+            chapterIntroXhr.abort();
+            chapterIntroXhr = new XMLHttpRequest();
+            chapterIntroXhr.open(
+                "GET",
+                "http://127.0.0.1:5000/generate_chapter_intro?chapter=" +
+                    encodeURIComponent(chapterName) +
+                    "&syllabus=" +
+                    encodeURIComponent(removePrefixes(syllabusText)),
+                true,
+            );
+            chapterIntroXhr.onprogress = function () {
+                chapterIntroText = chapterIntroXhr.responseText;
+            };
+            chapterIntroXhr.send();
+        }
+    }
+
     const dispatch = createEventDispatcher();
 
     function closePanel() {
         dispatch("closePanel");
+    }
+
+    let selectedLesson = "";
+
+    function clickLesson(lessonName) {
+        console.log(lessonName);
+        selectedLesson = lessonName;
     }
 </script>
 
@@ -20,9 +53,27 @@
     Lessons:
     <ul>
         {#each lessons as lesson}
-            <li>{lesson}</li>
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <li
+                class="lesson"
+                on:click={() => {
+                    clickLesson(lesson);
+                }}
+            >
+                {lesson}
+            </li>
         {/each}
     </ul>
+    <p>{chapterIntroText}</p>
+    {#if selectedLesson}
+        <LessonModal
+            bind:lessonName={selectedLesson}
+            bind:syllabusText={syllabusText}
+            on:closeModal={() => {
+                selectedLesson = "";
+            }}
+        />
+    {/if}
 </main>
 
 <style>
@@ -47,5 +98,14 @@
         color: black;
         text-decoration: none;
         cursor: pointer;
+    }
+
+    .lesson {
+        text-decoration: underline;
+    }
+
+    .lesson:hover {
+        cursor: pointer;
+        color: blue;
     }
 </style>

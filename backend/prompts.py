@@ -2,13 +2,14 @@ from llm import prompt_llm
 import yaml
 import json
 
-def generate_lesson(subject):
+def generate_lesson(lesson, syllabus):
 
     prompt = f"""
 Generate a short introductory lesson on the given subject.
 Aim for roughly 200 words.
 
-Subject: TuringMachines
+Syllabus: syllabus
+Lesson: TuringMachines
 
   <h1>Understanding Turing Machines</h1>
     <p>A <strong>Turing Machine</strong> is a fundamental concept in the field of computer science and computational theory, conceptualized by the mathematician Alan Turing in 1936. It's a theoretical device that manipulates symbols on a strip of tape according to a set of rules. Despite its simplicity, a Turing Machine can be adapted to simulate the logic of any computer algorithm, and is thus powerful enough to model the computation of any data manipulable by a computer.</p>
@@ -27,7 +28,8 @@ Subject: TuringMachines
     <h2>Significance</h2>
     <p>The concept of Turing Machines is crucial in the theory of computation, as it helps in understanding what can (or cannot) be computed. It's a cornerstone in discussions about the limits of computational power and decidability.</p>
 
-Subject: {subject}
+Syllabus: {syllabus}
+Lesson: {lesson}
 """
     
     for chunk in prompt_llm(prompt):
@@ -285,6 +287,15 @@ Syllabus:
 Course: "{course}"
 """
 
+    for chunk in prompt_llm(prompt):
+        yield chunk
+
+def generate_chapter_intro(chapter, syllabus):
+    prompt = f"""
+{syllabus}
+
+Write a 140 word introduction to the chapter "{chapter}".
+"""
     for chunk in prompt_llm(prompt):
         yield chunk
 

@@ -1,7 +1,7 @@
 import time
 from flask import Flask, Response, stream_with_context, request, jsonify
 from flask_cors import CORS
-from prompts import generate_tree, generate_lesson, generate_syllabus
+from prompts import generate_tree, generate_lesson, generate_syllabus, generate_chapter_intro
 
 app = Flask(__name__)
 CORS(app)
@@ -50,18 +50,19 @@ def generate_endpoint():
 
 @app.route('/generate_lesson')
 def generate_lesson_endpoint():
-    def generate_stream(prompt):
+    def generate_stream(prompt, syllabus):
         print("Generating lesson for prompt:", prompt)
-        for output in generate_lesson(prompt):
+        for output in generate_lesson(prompt, syllabus):
             yield output
         yield "\n\n"
 
     prompt = request.args.get('prompt')
+    syllabus = request.args.get('prompt', 'syllabus')
 
     if not prompt or prompt.strip() == "":
         return jsonify({"error": "No valid prompt provided"}), 400
 
-    return Response(stream_with_context(generate_stream(prompt)), mimetype='text/plain')
+    return Response(stream_with_context(generate_stream(prompt, syllabus)), mimetype='text/plain')
 
 @app.route('/generate_syllabus')
 def generate_syllabus_endpoint():
@@ -127,6 +128,21 @@ Syllabus:
 
     return Response(stream_with_context(generate_stream(prompt)), mimetype='text/plain')
 
+@app.route('/generate_chapter_intro')
+def generate_chapter_endpoint():
+    def generate_stream(chapter, syllabus):
+        print("Generating chapter intro for prompt:", chapter, syllabus)
+        for output in generate_chapter_intro(chapter, syllabus):
+            yield output
+        yield "\n\n"
+
+    chapter = request.args.get('chapter')
+    syllabus = request.args.get('syllabus')
+
+    if not chapter or chapter.strip() == "":
+        return jsonify({"error": "No valid prompt provided"}), 400
+
+    return Response(stream_with_context(generate_stream(chapter, syllabus)), mimetype='text/plain')
 if __name__ == '__main__':
     app.run(debug=True)
 

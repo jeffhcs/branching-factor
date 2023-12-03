@@ -90,7 +90,7 @@ Syllabus:
           - "Lesson 7.3: t-SNE and UMAP"
 `
 
-function removePrefixes(obj) {
+export function removePrefixes(obj) {
     if (Array.isArray(obj)) {
         return obj.map(item => removePrefixes(item));
     } else if (typeof obj === 'string') {

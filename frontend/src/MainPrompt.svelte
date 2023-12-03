@@ -120,8 +120,8 @@
         };
         generateSyllabusXhr.send();
     }
-    let courseNamePrompt = "Neural Networks";
-    let syllabusText = "syllabus";
+    let courseNamePrompt = "";
+    let syllabusText = "";
     let syllabus;
 
     function generate() {
@@ -155,7 +155,7 @@
         </div>
         {#if selectedChapterData}
             <div class="chapter-panel">
-                <ChapterLessonsPanel bind:chapterData={selectedChapterData} on:closePanel={handleClosePanel}/>
+                <ChapterLessonsPanel bind:chapterData={selectedChapterData} bind:syllabusText={syllabusText} on:closePanel={handleClosePanel}/>
             </div>
         {/if}
     </div>
@@ -199,7 +199,7 @@
         display: flex;
         /* justify-content: space-between; 
         align-items: start;  */
-        border: red solid 1px;
+        border: black solid 1px;
         width: 80vw;
         height: 75vh;
     }
