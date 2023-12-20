@@ -7,6 +7,8 @@
         parseSyllabusYaml,
         getChaptersForTree,
     } from "./parsing/parseSyllabus";
+    import { splashPromptTrigger } from './customStore.js';
+
     let lessonTreeComponent;
 
     function parseToTreeElements(llmOutput, chaptersData) {
@@ -138,11 +140,18 @@
     function handleClosePanel() {
         selectedChapterData = null;
     }
+
+    splashPromptTrigger.subscribe((promptText) => {
+        if (promptText != null) {
+            courseNamePrompt = promptText;
+            generate();
+        }
+    });
 </script>
 
 <main>
     <div>
-        What do you want to learn?
+        Where's Curiosity Taking You?
         <input type="text" bind:value={courseNamePrompt} />
         <button on:click={generate}>Generate</button>
     </div>
