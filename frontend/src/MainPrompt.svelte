@@ -7,7 +7,7 @@
         parseSyllabusYaml,
         getChaptersForTree,
     } from "./parsing/parseSyllabus";
-    import { splashPromptTrigger } from './customStore.js';
+    import { splashPromptTrigger, loadingTextTrigger, currentPageTrigger } from './customStore.js';
 
     let lessonTreeComponent;
 
@@ -105,12 +105,15 @@
             // const elements = parseToTreeElements(generateTreeXhr.responseText);
             // if (elements) lessonTreeComponent.update_tree(elements);
             syllabusText = generateSyllabusXhr.responseText;
+            loadingTextTrigger.broadcast(syllabusText);
+
         };
         generateSyllabusXhr.onreadystatechange = function () {
             if (generateSyllabusXhr.readyState === XMLHttpRequest.DONE) {
                 if (generateSyllabusXhr.status === 200) {
                     syllabus = parseSyllabusYaml(syllabusText);
                     if (syllabus) {
+                        currentPageTrigger.broadcast("main");
                         const chaptersPrompt = getChaptersForTree(syllabus);
                         callGenerateTreeEndpoint(chaptersPrompt);
                         // lessonTreeComponent.update_tree(chapters);
@@ -120,6 +123,7 @@
                 }
             }
         };
+        currentPageTrigger.broadcast("loading");
         generateSyllabusXhr.send();
     }
     let courseNamePrompt = "";

@@ -1,11 +1,12 @@
 <script>
 
-import { splashPromptTrigger } from './customStore.js';
+import { splashPromptTrigger, currentPageTrigger } from './customStore.js';
 
 let promptText = "machine learning";
 
 function handleClick() {
     splashPromptTrigger.broadcast(promptText);
+    currentPageTrigger.broadcast("loading");
 }
 
 

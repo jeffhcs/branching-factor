@@ -10,3 +10,5 @@ function createFunctionTrigger() {
 }
 
 export const splashPromptTrigger = createFunctionTrigger();
+export const loadingTextTrigger = createFunctionTrigger();
+export const currentPageTrigger = createFunctionTrigger();
