@@ -15,6 +15,7 @@
     let chapterIntroText = "";
 
     $: {
+        chapterIntroText = "";
         if (chapterName && syllabusText) {
             chapterIntroXhr.abort();
             chapterIntroXhr = new XMLHttpRequest();
@@ -42,7 +43,6 @@
     let selectedLesson = "";
 
     function clickLesson(lessonName) {
-        console.log(lessonName);
         selectedLesson = lessonName;
     }
 </script>
@@ -80,7 +80,7 @@
     main {
         width: 100%;
         height: 100%;
-        border: 1px solid black;
+        border-left: 3px solid black;
         padding: 20px;
         /* margin: 20px; */
         box-sizing: border-box;

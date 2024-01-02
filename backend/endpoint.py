@@ -50,6 +50,10 @@ def generate_endpoint():
 
 @app.route('/generate_lesson')
 def generate_lesson_endpoint():
+    # response_text = """Lesson: "Introduction to Neural Networks"
+    # """
+    # return Response(response_text, mimetype='text/plain')
+
     def generate_stream(prompt, syllabus):
         print("Generating lesson for prompt:", prompt)
         for output in generate_lesson(prompt, syllabus):

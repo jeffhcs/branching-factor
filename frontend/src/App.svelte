@@ -3,6 +3,7 @@
     import LoadingPage from "./LoadingPage.svelte";
     import MainPrompt from "./MainPrompt.svelte";
     import Splash from "./Splash.svelte";
+    import LessonModal from "./LessonModal.svelte";
 
     import { currentPageTrigger } from "./customStore.js";
 
@@ -21,10 +22,10 @@
         <LoadingPage />
     {/if}
     {#if currPage === "main" || currPage === "loading"}
-    <div class:hidden={currPage != "main"} class="main-page">
-        <CoverPage />
-        <MainPrompt />
-    </div>
+        <div class:hidden={currPage != "main"} class="main-page">
+            <CoverPage />
+            <MainPrompt />
+        </div>
     {/if}
 </main>
 

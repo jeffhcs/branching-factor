@@ -210,7 +210,7 @@
         display: flex;
         /* justify-content: space-between; 
         align-items: start;  */
-        border: black solid 1px;
+        border: black solid 3px;
         width: 80vw;
         height: 75vh;
     }

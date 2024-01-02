@@ -1,8 +1,22 @@
 from llm import prompt_llm
 import yaml
 import json
+import time
+
+def fake_stream(text, delay=0.01):
+    for char in text:
+        yield char
+        time.sleep(delay)
 
 def generate_lesson(lesson, syllabus):
+#     response_text = f"""In measure theory, an area of mathematics, Egorov's theorem establishes a condition for the uniform convergence of a pointwise convergent sequence of measurable functions. It is also named Severini–Egoroff theorem or Severini–Egorov theorem, after Carlo Severini, an Italian mathematician, and Dmitri Egorov, a Russian physicist and geometer, who published independent proofs respectively in 1910 and 1911.
+
+# Egorov's theorem can be used along with compactly supported continuous functions to prove Lusin's theorem for integrable functions.
+# Historical note
+# The first proof of the theorem was given by Carlo Severini in 1910:[1][2] he used the result as a tool in his research on series of orthogonal functions. His work remained apparently unnoticed outside Italy, probably due to the fact that it is written in Italian, appeared in a scientific journal with limited diffusion and was considered only as a means to obtain other theorems. A year later Dmitri Egorov published his independently proved results,[3] and the theorem became widely known under his name: however, it is not uncommon to find references to this theorem as the Severini–Egoroff theorem. The first mathematicians to prove independently the theorem in the nowadays common abstract measure space setting were Frigyes Riesz (1922, 1928), and in Wacław Sierpiński (1928):[4] an earlier generalization is due to Nikolai Luzin, who succeeded in slightly relaxing the requirement of finiteness of measure of the domain of convergence of the pointwise converging functions in the ample paper (Luzin 1916).[5] Further generalizations were given much later by Pavel Korovkin, in the paper (Korovkin 1947), and by Gabriel Mokobodzki in the paper (Mokobodzki 1970). """
+#     for output in fake_stream(response_text):
+#         yield output
+#     return
 
     prompt = f"""
 Generate a short introductory lesson on the given subject.
