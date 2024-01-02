@@ -5,12 +5,16 @@
 <main>
     <div class="title-box">
         <div class="title">
-        branching <br> factor
+        Branching <br> Factor
         </div>
         <div class="title-sub">
-            Free is the puppet the who loves their strings. <br> In what way are <i><b>you</b></i> free?
+            <!-- Free is the puppet the who loves their strings. <br> In what way are <i><b>you</b></i> free? -->
+            Where's <i>curiosity</i> taking you?
         </div>
+        <div class="prompt-box">
+
         <PromptBox />
+        </div>
  </div>
     <!-- <div class="tree"> -->
         <img src="tree.jpg" class="tree"/>
@@ -49,5 +53,8 @@
         bottom: 1px;
         right: 0;
         z-index: -1;
+    }
+    .prompt-box {
+        margin: 10px;
     }
 </style>
