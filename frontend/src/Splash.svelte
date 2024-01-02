@@ -35,6 +35,7 @@
     .title {
         font-family: sans-serif;
         font-size: 100px;
+        font-weight: bold;
     }
     .title-sub {
         font-family: sans-serif;

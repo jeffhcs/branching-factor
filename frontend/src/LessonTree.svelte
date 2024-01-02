@@ -67,7 +67,7 @@
 
         cy = cytoscape({
             container: cyContainer,
-            // elements: plainData,
+            elements: plainData,
             style: [
                 {
                     selector: "node",

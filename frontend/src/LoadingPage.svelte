@@ -4,12 +4,12 @@
     import { loadingTextTrigger } from "./customStore";
 
     let progress = 0;
-    let syllabusText = "hello";
-    const predictedOutputLength = 2000;
+    let syllabusText = "";
+    const predictedOutputLength = 1600;
 
     loadingTextTrigger.subscribe((text) => {
         if (text != null) {
-            progress = progressMap(text.length, predictedOutputLength, 0.80)
+            progress = progressMap(text.length, predictedOutputLength, 0.85)
             syllabusText = text;
         }
     })

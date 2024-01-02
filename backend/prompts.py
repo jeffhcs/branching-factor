@@ -184,7 +184,8 @@ Chapters:
 
 def generate_syllabus(course):
     prompt = f"""
-Create a syllabus on the following courses and course descriptions. 
+Create a syllabus on the following prompts. Additionally generate a course title and description. 
+Unless otherwise specified, assume the course is at an introductory level.
 There should be 2-4 units.
 Each unit should have 2-4 chapters.
 Each chapter should have 2-5 lessons.
@@ -203,7 +204,8 @@ Syllabus:
         - "Lesson 3.1: _"
 
 (1/3)
-Course: "Computational Complexity and Computability"
+Prompt: "computational complexity"
+Course: "Introduction to Computational Complexity and Computability"
 Description: "Introduction to the theory of computability: Turing machines and other models of computation, Church’s thesis, computable and noncomputable functions, recursive and recursively enumerable sets, many-one reductions. Introduction to complexity theory: P, NP, polynomial time reducibility, NP-completeness, self-reducibility, space complexity (L, NL, PSPACE and completeness for those classes), hierarchy theorems, and provably intractable problems."
 Syllabus:
   - "Unit 1: Automata and Languages":
@@ -247,6 +249,7 @@ Syllabus:
           - "Lesson 9.3: Circuit Complexity"
 
 (2/3)
+Prompt: "machine learning"
 Course: "Introduction to Machine Learning"
 Description: "An introduction to methods for automated learning of relationships on the basis of empirical data. Classification and regression using nearest neighbour methods, decision trees, linear models, and neural networks. Clustering algorithms. Problems of overfitting and of assessing accuracy."
 Syllabus:
@@ -284,7 +287,7 @@ Syllabus:
           - "Lesson 7.3: t-SNE and UMAP"
 
 (3/3)
-Course: "{course}"
+Prompt: "{course}"
 """
 
     for chunk in prompt_llm(prompt):
@@ -299,6 +302,64 @@ Write a 140 word introduction to the chapter "{chapter}".
     for chunk in prompt_llm(prompt):
         yield chunk
 
+def generate_course_intro(course, syllabus):
+    prompt = f"""
+Generate a 100-150 word introduction to the following courses. 
+Write one introductory sentence, one sentence for each unit, and one concluding sentence.
+Be sure to begin your response with `Introduction: `. Do not wrap your text in quotes.
+Please format your text with each sentence on a new line.
+First is an example (1/2), followed by your prompt (2/2).
+
+(1/2)
+Course: Introduction to Machine Learning
+Syllabus:
+- "Unit 1: Foundations of Machine Learning":
+    - "Chapter 1: Introduction to Machine Learning":
+        - "Lesson 1.1: Overview of Machine Learning"
+        - "Lesson 1.2: Types of Machine Learning"
+        - "Lesson 1.3: Evaluation Metrics"
+    - "Chapter 2: Data Preprocessing":
+        - "Lesson 2.1: Data Cleaning"
+        - "Lesson 2.2: Feature Selection and Extraction"
+        - "Lesson 2.3: Data Transformation Techniques"
+- "Unit 2: Supervised Learning":
+    - "Chapter 3: Regression Analysis":
+        - "Lesson 3.1: Linear Regression"
+        - "Lesson 3.2: Polynomial Regression"
+        - "Lesson 3.3: Regularization Methods"
+    - "Chapter 4: Classification Techniques":
+        - "Lesson 4.1: Decision Trees"
+        - "Lesson 4.2: Nearest Neighbour Methods"
+        - "Lesson 4.3: Support Vector Machines"
+        - "Lesson 4.4: Neural Networks"
+    - "Chapter 5: Model Evaluation":
+        - "Lesson 5.1: Cross-Validation"
+        - "Lesson 5.2: Overfitting and Underfitting"
+        - "Lesson 5.3: Performance Metrics"
+- "Unit 3: Unsupervised Learning":
+    - "Chapter 6: Clustering":
+        - "Lesson 6.1: K-Means Clustering"
+        - "Lesson 6.2: Hierarchical Clustering"
+        - "Lesson 6.3: Density-Based Clustering"
+    - "Chapter 7: Dimensionality Reduction":
+        - "Lesson 7.1: Principal Component Analysis"
+        - "Lesson 7.2: Autoencoders"
+        - "Lesson 7.3: t-SNE and UMAP"
+Introduction: Welcome to "Exploring the Depths of Real Analysis," a course meticulously crafted to navigate the complex world of real analysis.
+In Unit 1, we establish foundational knowledge, delving into sets, numbers, sequences, and series, focusing on their properties and convergence.
+Unit 2 shifts to Limits and Continuity, exploring the nuanced definitions and properties of limits, alongside the pivotal Intermediate Value Theorem.
+Unit 3, covering Differentiation and Integration, addresses core calculus principles, from derivative concepts to the Fundamental Theorem of Calculus and integration techniques.
+The course culminates in Unit 4 with Advanced Topics, introducing sequences and series of functions, metric spaces, and Lebesgue Integration.
+This course is an ideal journey for those seeking a profound understanding of real analysis, blending theoretical depth with practical insights.
+
+(2/2)
+Course: {course}
+Syllabus:
+{syllabus}
+    """
+
+    for chunk in prompt_llm(prompt):
+        yield chunk
 
 def parse_tree(llm_output):
     tree = yaml.safe_load(llm_output)

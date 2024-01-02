@@ -7,7 +7,7 @@
         parseSyllabusYaml,
         getChaptersForTree,
     } from "./parsing/parseSyllabus";
-    import { splashPromptTrigger, loadingTextTrigger, currentPageTrigger } from './customStore.js';
+    import { splashPromptTrigger, loadingTextTrigger, currentPageTrigger, courseObjectTrigger } from './customStore.js';
 
     let lessonTreeComponent;
 
@@ -46,8 +46,6 @@
 
             const elements = [];
 
-            console.log(chaptersData);
-
             for (const chapter in tree[rootKey]) {
                 const prerequisites = tree[rootKey][chapter];
 
@@ -81,7 +79,6 @@
             true,
         );
         generateTreeXhr.onprogress = function () {
-            console.log(generateTreeXhr.responseText);
             const elements = parseToTreeElements(
                 generateTreeXhr.responseText,
                 chaptersData,
@@ -114,6 +111,7 @@
                     syllabus = parseSyllabusYaml(syllabusText);
                     if (syllabus) {
                         currentPageTrigger.broadcast("main");
+                        courseObjectTrigger.broadcast(syllabus);
                         const chaptersPrompt = getChaptersForTree(syllabus);
                         callGenerateTreeEndpoint(chaptersPrompt);
                         // lessonTreeComponent.update_tree(chapters);
@@ -154,11 +152,11 @@
 </script>
 
 <main>
-    <div>
+    <!-- <div>
         Where's Curiosity Taking You?
         <input type="text" bind:value={courseNamePrompt} />
         <button on:click={generate}>Generate</button>
-    </div>
+    </div> -->
     <div class="tree-window">
         <div class="lesson-tree">
             <LessonTree
@@ -172,13 +170,13 @@
             </div>
         {/if}
     </div>
-    <Syllabus bind:content={syllabusText} />
+    <!-- <Syllabus bind:content={syllabusText} /> -->
 </main>
 
 <style>
     main {
         font-family: "Arial", sans-serif;
-        background-color: #f4f4f4;
+        /* background-color: #f4f4f4; */
         display: flex;
         flex-direction: column;
         align-items: center;
