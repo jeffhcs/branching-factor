@@ -6,6 +6,7 @@
     import LessonModal from "./LessonModal.svelte";
 
     import { currentPageTrigger } from "./customStore.js";
+    import Sidebar from "./Sidebar.svelte";
 
     let currPage = "splash";
 
@@ -15,6 +16,7 @@
 </script>
 
 <main>
+    <Sidebar />
     {#if currPage === "splash"}
         <Splash />
     {/if}

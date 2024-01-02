@@ -8,52 +8,10 @@
     export let syllabusText = "";
 
 //     title = "Introduction to Real Analysis";
-//     syllabusText = `
-//     - "Unit 1: Foundations of Real Analysis":
-//     - "Chapter 1: Sets and Numbers":
-//         - "Lesson 1.1: Sets and Operations"
-//         - "Lesson 1.2: Ordered Sets"
-//         - "Lesson 1.3: The Real Number System"
-//     - "Chapter 2: Sequences":
-//         - "Lesson 2.1: Convergence of Sequences"
-//         - "Lesson 2.2: Subsequences"
-//         - "Lesson 2.3: Bounded and Monotone Sequences"
-//     - "Chapter 3: Series":
-//         - "Lesson 3.1: Convergence of Series"
-//         - "Lesson 3.2: Tests for Convergence"
-//         - "Lesson 3.3: Power Series"
-// - "Unit 2: Limits and Continuity":
-//     - "Chapter 4: Limits":
-//         - "Lesson 4.1: Definition of Limits"
-//         - "Lesson 4.2: Properties of Limits"
-//         - "Lesson 4.3: One-Sided Limits"
-//     - "Chapter 5: Continuity":
-//         - "Lesson 5.1: Definition of Continuity"
-//         - "Lesson 5.2: Properties of Continuous Functions"
-//         - "Lesson 5.3: Intermediate Value Theorem"
-// - "Unit 3: Differentiation and Integration":
-//     - "Chapter 6: Differentiation":
-//         - "Lesson 6.1: Definition of Derivatives"
-//         - "Lesson 6.2: Differentiation Rules"
-//         - "Lesson 6.3: Mean Value Theorem"
-//     - "Chapter 7: Integration":
-//         - "Lesson 7.1: Riemann Integrals"
-//         - "Lesson 7.2: Fundamental Theorem of Calculus"
-//         - "Lesson 7.3: Techniques of Integration"
-//         - "Lesson 7.4: Improper Integrals"
-// - "Unit 4: Advanced Topics in Real Analysis":
-//     - "Chapter 8: Sequences and Series of Functions":
-//         - "Lesson 8.1: Pointwise and Uniform Convergence"
-//         - "Lesson 8.2: Continuity and Differentiability of Limit Functions"
-//     - "Chapter 9: Metric Spaces":
-//         - "Lesson 9.1: Definition and Examples of Metric Spaces"
-//         - "Lesson 9.2: Open and Closed Sets"
-//         - "Lesson 9.3: Completeness and Compactness"
-//     - "Chapter 10: Introduction to Lebesgue Integration":
-//         - "Lesson 10.1: Riemann vs Lebesgue Integrals"
-//         - "Lesson 10.2: Measure Theory Basics"
-//         - "Lesson 10.3: Lebesgue Integration of Bounded Functions"
-    // `
+//     intro = `
+// Focuses on the core ideas and concepts of game theory and on applications of them in economics and other social sciences. Topics may include: oligopoly, electoral competition, the theory of public goods, voting theory, the free rider problem, repeated interaction, bargaining, evolutionary equilibrium, matching and auctions.
+// How can we make collective decisions fairly? What does it mean to properly balance conflicting interests? How can we combine the well-being of individuals into a concept of societal well-being? We explore these and related ethical questions from the perspective of economic theory. A central tool is the axiomatic approach, which calls for decisions to be consistent, in precise senses, across related situations. Possible topics include: rationing problems, the Shapley value, fair division, discrimination, voting theory, foundations of utilitarianism and egalitarianism, measurement of inequality, population ethics, intergenerational equity, and concepts of equal opportunity.
+//     `
 
     courseObjectTrigger.subscribe((course) => {
         if (course != null) {
@@ -163,7 +121,8 @@
 
     .cover-image {
         max-width: 40vw;
-        height: auto;
+        max-height: 75vh;
+        /* height: auto; */
         object-fit: cover;
     }
 
@@ -182,7 +141,7 @@
     }
 
     .title {
-        font-size: min(80px, 8vw);
+        font-size: min(60px, 8vw);
         font-weight: bold;
         margin-bottom: 10px;
     }

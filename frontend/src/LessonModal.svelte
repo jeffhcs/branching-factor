@@ -65,7 +65,7 @@
 
 <div id="myModal" class="modal">
     <div class="modal-content">
-        <span id="closeModal" class="close" on:click={closeModal}>&times;</span>
+        <span class="close" on:click={closeModal}>&times;</span>
         {@html lessonContent}
         {#if !finishedGenerating}
             <div class="loading-bar">
@@ -96,7 +96,7 @@
     /* Modal content */
     .modal-content {
         background-color: #fefefe;
-        margin: 10vh auto;
+        margin: 5vh auto;
         padding: 40px;
         border: 3px solid black;
         width: 80%;

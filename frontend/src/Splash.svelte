@@ -19,6 +19,9 @@
     <!-- <div class="tree"> -->
         <img src="tree.jpg" class="tree"/>
     <!-- </div> -->
+    <div class="login" on:click={()=>alert("not implemented")}>
+        Login
+    </div>
 </main>
 
 <style>
@@ -40,6 +43,7 @@
         font-family: sans-serif;
         font-size: 100px;
         font-weight: bold;
+        z-index: -1;
     }
     .title-sub {
         font-family: sans-serif;
@@ -50,11 +54,25 @@
 
         height: 150vh;
         width: auto;
-        bottom: 1px;
+        bottom: -40px;
         right: 0;
         z-index: -1;
     }
     .prompt-box {
         margin: 10px;
+    }
+    .login {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 10px;
+        font-family: sans-serif;
+        font-size: 20px;
+        font-weight: bold;
+        padding: 20px;
+        cursor: pointer;
+    }
+    .login:hover {
+        text-decoration: underline;
     }
 </style>

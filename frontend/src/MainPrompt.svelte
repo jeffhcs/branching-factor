@@ -175,14 +175,13 @@
 
 <style>
     main {
-        font-family: "Arial", sans-serif;
+        font-family: sans-serif;
         /* background-color: #f4f4f4; */
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         margin: 0;
-        color: #333;
     }
 
     input[type="text"] {
