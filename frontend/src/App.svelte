@@ -7,6 +7,7 @@
 
     import { currentPageTrigger } from "./customStore.js";
     import Sidebar from "./Sidebar.svelte";
+    import AuthTest from "./AuthTest.svelte";
 
     let currPage = "splash";
 
@@ -16,7 +17,8 @@
 </script>
 
 <main>
-    <Sidebar />
+    <AuthTest />
+    <!-- <Sidebar />
     {#if currPage === "splash"}
         <Splash />
     {/if}
@@ -28,7 +30,7 @@
             <CoverPage />
             <MainPrompt />
         </div>
-    {/if}
+    {/if} -->
 </main>
 
 <style>
