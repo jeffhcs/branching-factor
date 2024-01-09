@@ -19,9 +19,7 @@
     <!-- <div class="tree"> -->
         <img src="tree.jpg" class="tree"/>
     <!-- </div> -->
-    <div class="login" on:click={()=>alert("not implemented")}>
-        Login
-    </div>
+
 </main>
 
 <style>
@@ -61,18 +59,5 @@
     .prompt-box {
         margin: 10px;
     }
-    .login {
-        position: absolute;
-        top: 0;
-        right: 0;
-        margin: 10px;
-        font-family: sans-serif;
-        font-size: 20px;
-        font-weight: bold;
-        padding: 20px;
-        cursor: pointer;
-    }
-    .login:hover {
-        text-decoration: underline;
-    }
+
 </style>

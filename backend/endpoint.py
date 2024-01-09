@@ -5,9 +5,11 @@ from prompts import generate_tree, generate_lesson, generate_syllabus, generate_
 from generation import *
 import threading
 import json
+from auth import get_user
+from db import db
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, origins='http://localhost:8080')
 
 def long_running_task():
     while True:
@@ -87,11 +89,17 @@ def generate_syllabus_endpoint():
     #     yield "\n\n"
 
     prompt = request.args.get('prompt')
+    access_token = request.args.get('access_token')
+
+    user = get_user(access_token)
+    
+    if not user:
+        return jsonify({"error": "Invalid access token"}), 400
 
     if not prompt or prompt.strip() == "":
         return jsonify({"error": "No valid prompt provided"}), 400
 
-    return Response(stream_with_context(create_notebook(prompt)), mimetype='text/plain')
+    return Response(stream_with_context(create_notebook(prompt, user)), mimetype='text/plain')
 
 @app.route('/get_notebook_cover')
 def get_notebook_cover_endpoint():
@@ -127,6 +135,25 @@ def generate_intro_endpoint():
     #     return jsonify({"error": "No valid prompt provided"}), 400
 
     return Response(stream_with_context(generate_stream(title, syllabus)), mimetype='text/plain')
+
+@app.route('/get_notebooks')
+def get_notebooks_endpoint():
+    # notebooks = [
+    #     { "id": "659c7f78b2218377cadda54e", "title": "Introduction to machine learning"},
+    #     { "id": "659c7f78b2218377cadda54e", "title": "Introduction to machine learning"},
+    #     { "id": "659c7f78b2218377cadda54e", "title": "Introduction to machine learning"},
+    # ]
+    access_token = request.args.get('access_token')
+    user = get_user(access_token)
+
+    if not user:
+        return jsonify({"error": "Invalid access token"}), 400
+
+    user_document = db.users.find_one({"email": user})
+    notebooks = user_document['notebooks'] if user_document else []
+    
+    return jsonify(notebooks)
+
 if __name__ == '__main__':
     app.run(debug=True)
 

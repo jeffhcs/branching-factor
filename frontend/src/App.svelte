@@ -4,6 +4,7 @@
     import MainPrompt from "./MainPrompt.svelte";
     import Splash from "./Splash.svelte";
     import LessonModal from "./LessonModal.svelte";
+    import Login from "./Login.svelte";
 
     import { currentPageTrigger, notebookTrigger } from "./customStore.js";
     import Sidebar from "./Sidebar.svelte";
@@ -21,6 +22,7 @@
 
 <main>
     <Sidebar />
+    <Login />
     {#if currPage === "splash"}
         <Splash />
     {/if}

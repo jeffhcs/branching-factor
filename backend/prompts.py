@@ -209,8 +209,8 @@ ChaptersTree:
         - "Introduction to Machine Learning"
         - "Model Evaluation"
 """
-    yield dummy_response
-    return
+    # yield dummy_response
+    # return
     # print(chapters)
     response_text = ""
     for chunk in prompt_llm(prompt):
@@ -242,10 +242,10 @@ Syllabus:
         - "Lesson 3.1: _"
 
 (1/3)
-Prompt: "computational complexity"
-Course: "Introduction to Computational Complexity and Computability"
-Description: "Introduction to the theory of computability: Turing machines and other models of computation, Church’s thesis, computable and noncomputable functions, recursive and recursively enumerable sets, many-one reductions. Introduction to complexity theory: P, NP, polynomial time reducibility, NP-completeness, self-reducibility, space complexity (L, NL, PSPACE and completeness for those classes), hierarchy theorems, and provably intractable problems."
-Syllabus:
+prompt: "computational complexity"
+course: "Introduction to Computational Complexity and Computability"
+description: "Introduction to the theory of computability: Turing machines and other models of computation, Church’s thesis, computable and noncomputable functions, recursive and recursively enumerable sets, many-one reductions. Introduction to complexity theory: P, NP, polynomial time reducibility, NP-completeness, self-reducibility, space complexity (L, NL, PSPACE and completeness for those classes), hierarchy theorems, and provably intractable problems."
+syllabus:
   - "Unit 1: Automata and Languages":
       - "Chapter 1: Regular Languages":
           - "Lesson 1.1: Finite Automata"
@@ -289,10 +289,10 @@ Syllabus:
           - "Lesson 9.3: Circuit Complexity"
 
 (2/3)
-Prompt: "machine learning"
-Course: "Introduction to Machine Learning"
-Description: "An introduction to methods for automated learning of relationships on the basis of empirical data. Classification and regression using nearest neighbour methods, decision trees, linear models, and neural networks. Clustering algorithms. Problems of overfitting and of assessing accuracy."
-Syllabus:
+prompt: "machine learning"
+course: "Introduction to Machine Learning"
+description: "An introduction to methods for automated learning of relationships on the basis of empirical data. Classification and regression using nearest neighbour methods, decision trees, linear models, and neural networks. Clustering algorithms. Problems of overfitting and of assessing accuracy."
+syllabus:
   - "Unit 1: Foundations of Machine Learning":
       - "Chapter 1: Introduction to Machine Learning":
           - "Lesson 1.1: Overview of Machine Learning"
@@ -327,7 +327,7 @@ Syllabus:
           - "Lesson 7.3: t-SNE and UMAP"
 
 (3/3)
-Prompt: "{course}"
+prompt: "{course}"
 """
 
     dummy_response = """
@@ -367,9 +367,9 @@ syllabus:
           - "Lesson 7.2: Autoencoders"
           - "Lesson 7.3: t-SNE and UMAP"
 """
-    for chunk in fake_stream(dummy_response):
-        yield chunk
-    return
+    # for chunk in fake_stream(dummy_response):
+    #     yield chunk
+    # return
 
     for chunk in prompt_llm(prompt):
         yield chunk

@@ -146,13 +146,13 @@
     }
 
     .title {
-        font-size: min(60px, 8vw);
+        font-size: min(100px, 6vw);
         font-weight: bold;
         margin-bottom: 10px;
     }
 
     p {
-        font-size: 18px;
+        font-size: 24px;
         text-align: justify;
     }
     p:not(:first-of-type) {

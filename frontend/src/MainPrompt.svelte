@@ -81,7 +81,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin: 0;
+        /* margin: 0; */
     }
 
     input[type="text"] {
@@ -111,7 +111,8 @@
         align-items: start;  */
         border: black solid 3px;
         width: 80vw;
-        height: 75vh;
+        height: 90vh;
+        margin-bottom: 5vh;
     }
 
     .lesson-tree {

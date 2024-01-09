@@ -3,7 +3,7 @@ import yaml, json, re
 from bson import ObjectId
 from db import db
 
-def create_notebook(prompt):
+def create_notebook(prompt, user):
     output = ""
     for chunk in generate_syllabus(prompt):
         output += chunk
@@ -28,6 +28,10 @@ def create_notebook(prompt):
                 
     # print(json.dumps(notebook, indent=2))
     notebook_id = str(db.notebooks.insert_one(notebook).inserted_id)
+    db.users.update_one({"email": user}, {"$push": {"notebooks": {
+        "id": notebook_id,
+        "title": notebook["course"]
+    }}}, upsert=True)
     yield f"\nnotebook_id: {notebook_id}"
 
 def get_tree(notebook_id):

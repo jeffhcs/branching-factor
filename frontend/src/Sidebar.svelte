@@ -1,7 +1,27 @@
 <script>
     import { slide } from 'svelte/transition';
-    import { currentPageTrigger } from './customStore';
+    import { currentPageTrigger, notebookTrigger } from './customStore';
+    import { EndpointCaller } from "./backend.js";
+
     let sidebarOpen = false;
+
+    let notebooks = []
+
+    const notebooksEndpoint = new EndpointCaller("get_notebooks");
+    notebooksEndpoint.onDone = (responseText) => {
+        notebooks = JSON.parse(responseText);
+    }
+
+    $: if (sidebarOpen) {
+        const access_token = JSON.parse(localStorage.getItem("oauth2-test-params"))["access_token"];
+        notebooksEndpoint.call({access_token: access_token});
+    }
+
+    function openNotebook(notebookId) {
+       currentPageTrigger.broadcast("main");
+       notebookTrigger.broadcast(notebookId);
+       sidebarOpen = false;
+    }
 
 </script>
 <main>
@@ -15,10 +35,15 @@
             <div class="menu">Explore</div>
             <div class="menu">Customize</div>
             <div class="divider"/>
-            <div class="heading">Notebooks:</div>
-            <div class="notebook">Advanced Topics in Machine Learning</div>
-            <div class="notebook">Computational Complexity and Computability</div>
-            <div class="notebook">Applied Game Theory</div>
+            <div class="heading">My Notebooks:</div>
+
+            {#if notebooks.length == 0}
+                <div class="notebook">No notebooks found.</div>
+            {:else}
+                {#each notebooks as notebook}
+                    <div class="notebook" on:click={()=>{openNotebook(notebook.id)}}>{notebook.title}</div>
+                {/each}
+            {/if}
         </div>
     {/if}
 </main>

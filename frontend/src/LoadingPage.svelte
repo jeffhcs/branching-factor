@@ -34,7 +34,7 @@
         );
     };
     syllabusEndpoint.onDone = (responseText) => {
-        // console.log("DONE");
+        console.log("DONE");
 
         const notebook = yaml.load(responseText);
 
@@ -62,8 +62,10 @@
 
     splashPromptTrigger.subscribe((promptText) => {
         if (promptText != null) {
+            const access_token = JSON.parse(localStorage.getItem("oauth2-test-params"))["access_token"];
+
             currentPageTrigger.broadcast("loading");
-            syllabusEndpoint.call({ prompt: promptText });
+            syllabusEndpoint.call({ prompt: promptText, access_token: access_token});
         }
     });
 </script>

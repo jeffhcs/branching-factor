@@ -4,6 +4,7 @@ export class EndpointCaller {
     constructor(endpoint) {
         this.xhr = new XMLHttpRequest();
         this.endpoint = serverAddress + "/" + endpoint;
+        this.xhr.withCredentials = true;
         this.onProgress = null;
         this.onDone = null;
     }
