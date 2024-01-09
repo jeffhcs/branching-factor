@@ -3,19 +3,35 @@
     import { removePrefixes } from "./parsing/parseSyllabus";
     import LoadingBar from "./LoadingBar.svelte";
     import { progressMap } from "./utils";
+    import { EndpointCaller } from "./backend.js";
 
     export let lessonName;
-    export let syllabusText;
+    export let notebookId;
+    export let unit_index;
+    export let chapter_index;
+    export let lesson_index;
 
     let oldLessonName = "";
 
     const dispatch = createEventDispatcher();
 
     function closeModal() {
-        lessonContentXhr.abort();
+        lessonEndpoint.abort();
         dispatch("closeModal");
     }
-    let lessonContentXhr = new XMLHttpRequest();
+
+    const lessonEndpoint = new EndpointCaller("get_lesson");
+    lessonEndpoint.onProgress = (responseText) => {
+        lessonContent = responseText;
+        progress = progressMap(
+            lessonContent.length,
+            predictedOutputLength,
+            0.85,
+        );
+    };
+    lessonEndpoint.onDone = (responseText) => {
+       finishedGenerating = true;
+    };
 
     let lessonContent = "";
     let progress = 0;
@@ -23,42 +39,14 @@
     let finishedGenerating = false;
 
     $: {
-        if (lessonName && syllabusText && lessonName != oldLessonName) {
-            oldLessonName = lessonName;
-            lessonContentXhr.abort();
-            lessonContentXhr = new XMLHttpRequest();
-            lessonContentXhr.open(
-                "GET",
-                "http://127.0.0.1:5000/generate_lesson?prompt=" +
-                    encodeURIComponent(lessonName) +
-                    "&syllabus=" +
-                    encodeURIComponent(removePrefixes(syllabusText)),
-                true,
-            );
-            lessonContentXhr.onprogress = function () {
-                console.log(lessonContentXhr.responseText);
-                lessonContent = lessonContentXhr.responseText;
-                progress = progressMap(
-                    lessonContent.length,
-                    predictedOutputLength,
-                    0.85,
-                );
-                console.log(
-                    lessonContent.length,
-                    predictedOutputLength,
-                    progress,
-                );
-            };
-            lessonContentXhr.onreadystatechange = function () {
-                if (lessonContentXhr.readyState === XMLHttpRequest.DONE) {
-                    if (lessonContentXhr.status === 200) {
-                        finishedGenerating = true;
-                    } else {
-                        console.log("There was a problem with the request.");
-                    }
-                }
-            };
-            lessonContentXhr.send();
+        if (notebookId) {
+            // oldLessonName = lessonName;
+            lessonEndpoint.call({
+                notebook_id: notebookId,
+                unit_index: unit_index,
+                chapter_index: chapter_index,
+                lesson_index: lesson_index,
+            });
         }
     }
 </script>

@@ -2,35 +2,32 @@
     import { createEventDispatcher } from "svelte";
     import { removePrefixes } from "./parsing/parseSyllabus";
     import LessonModal from "./LessonModal.svelte";
+    import { EndpointCaller } from "./backend.js";
 
     export let chapterData;
-    export let syllabusText;
+    export let notebookId;
+
+
     $: chapterName = chapterData
         ? chapterData.chapterName
         : "no chapter selected";
     $: lessons = chapterData ? chapterData.lessons : [];
 
-    let chapterIntroXhr = new XMLHttpRequest();
+    const chapterIntroEndpoint = new EndpointCaller("get_chapter_intro");
+    chapterIntroEndpoint.onProgress = (responseText) => {
+        chapterIntroText = responseText;
+    };
 
     let chapterIntroText = "";
 
     $: {
         chapterIntroText = "";
-        if (chapterName && syllabusText) {
-            chapterIntroXhr.abort();
-            chapterIntroXhr = new XMLHttpRequest();
-            chapterIntroXhr.open(
-                "GET",
-                "http://127.0.0.1:5000/generate_chapter_intro?chapter=" +
-                    encodeURIComponent(chapterName) +
-                    "&syllabus=" +
-                    encodeURIComponent(removePrefixes(syllabusText)),
-                true,
-            );
-            chapterIntroXhr.onprogress = function () {
-                chapterIntroText = chapterIntroXhr.responseText;
-            };
-            chapterIntroXhr.send();
+        if (chapterData) {
+            chapterIntroEndpoint.call({
+                notebook_id: notebookId,
+                unit_index: chapterData.unit_index,
+                chapter_index: chapterData.chapter_index,
+            });
         }
     }
 
@@ -41,6 +38,7 @@
     }
 
     let selectedLesson = "";
+    $: selectedLessonIndex = lessons.indexOf(selectedLesson);
 
     function clickLesson(lessonName) {
         selectedLesson = lessonName;
@@ -68,7 +66,10 @@
     {#if selectedLesson}
         <LessonModal
             bind:lessonName={selectedLesson}
-            bind:syllabusText={syllabusText}
+            bind:notebookId
+            bind:unit_index={chapterData.unit_index}
+            bind:chapter_index={chapterData.chapter_index}
+            bind:lesson_index={selectedLessonIndex}
             on:closeModal={() => {
                 selectedLesson = "";
             }}

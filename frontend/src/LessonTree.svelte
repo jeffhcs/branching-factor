@@ -92,10 +92,14 @@
             wheelSensitivity: 0.2,
         });
         cy.on("tap", "node", function (event) {
-            var node = event.target;
-            var chapterName = node.data("id");
-            var lessons = node.data("lessons");
-            clickChapter({ chapterName, lessons });
+            const node = event.target;
+            const chapterName = node.data("id");
+            const lessons = node.data("lessons");
+            const unit_index = node.data("unit_index");
+            const chapter_index = node.data("chapter_index");
+
+            
+            clickChapter({ chapterName, lessons, unit_index, chapter_index});
             // display_model(label + " (" + document.getElementById('prompt').value + ")");
         });
     });

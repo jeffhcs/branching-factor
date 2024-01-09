@@ -13,3 +13,4 @@ export const splashPromptTrigger = createFunctionTrigger();
 export const loadingTextTrigger = createFunctionTrigger();
 export const currentPageTrigger = createFunctionTrigger();
 export const courseObjectTrigger = createFunctionTrigger();
+export const notebookTrigger = createFunctionTrigger();

@@ -3,10 +3,11 @@ import yaml
 import json
 import time
 
-def fake_stream(text, delay=0.01):
-    for char in text:
+def fake_stream(text, delay=40):
+    for i, char in enumerate(text):
         yield char
-        time.sleep(delay)
+        if i % delay == 0:
+            time.sleep(0.01)
 
 def generate_lesson(lesson, syllabus):
 #     response_text = f"""In measure theory, an area of mathematics, Egorov's theorem establishes a condition for the uniform convergence of a pointwise convergent sequence of measurable functions. It is also named Severini–Egoroff theorem or Severini–Egorov theorem, after Carlo Severini, an Italian mathematician, and Dmitri Egorov, a Russian physicist and geometer, who published independent proofs respectively in 1910 and 1911.
@@ -20,6 +21,7 @@ def generate_lesson(lesson, syllabus):
 
     prompt = f"""
 Generate a short introductory lesson on the given subject.
+Ensure that your lesson fits into the syllabus. Crucially, it should not repeat any material that would be covered in some other lesson.
 Aim for roughly 200 words.
 
 Syllabus: syllabus
@@ -73,6 +75,8 @@ ChaptersTree:
     "chapter D":
         - "chapter A"
         - "chapter C"
+
+Do not output any additional text.
 
 (1/3)
 Chapters:
@@ -188,6 +192,26 @@ Chapters:
 {chapters}
 
 """
+    dummy_response = """
+ChaptersTree:
+    "Classification Techniques": []
+    "Clustering":
+        - "Classification Techniques"
+    "Data Preprocessing":
+        - "Clustering"
+    "Dimensionality Reduction":
+        - "Clustering"
+    "Introduction to Machine Learning":
+        - "Dimensionality Reduction"
+    "Model Evaluation":
+        - "Dimensionality Reduction"
+    "Regression Analysis":
+        - "Introduction to Machine Learning"
+        - "Model Evaluation"
+"""
+    yield dummy_response
+    return
+    # print(chapters)
     response_text = ""
     for chunk in prompt_llm(prompt):
         response_text += chunk
@@ -253,7 +277,9 @@ Syllabus:
           - "Lesson 7.4: NP-completeness"
       - "Chapter 8: Space Complexity":
           - "Lesson 8.1: Savitch's Theorem"
-          - "Lesson 8.2: The Class PSPACE"
+          - "Lesson 8.2: The Class PSPACE"for post in posts.find():
+    print(post)
+
           - "Lesson 8.3: PSPACE-completeness"
           - "Lesson 8.4: The Classes L and NL"
           - "Lesson 8.5: NL-completeness"
@@ -304,6 +330,47 @@ Syllabus:
 Prompt: "{course}"
 """
 
+    dummy_response = """
+course: "Introduction to Machine Learning"
+description: "An introduction to methods for automated learning of relationships on the basis of empirical data. Classification and regression using nearest neighbour methods, decision trees, linear models, and neural networks. Clustering algorithms. Problems of overfitting and of assessing accuracy."
+syllabus:
+  - "Unit 1: Foundations of Machine Learning":
+      - "Chapter 1: Introduction to Machine Learning":
+          - "Lesson 1.1: Overview of Machine Learning"
+          - "Lesson 1.2: Types of Machine Learning"
+          - "Lesson 1.3: Evaluation Metrics"
+      - "Chapter 2: Data Preprocessing":
+          - "Lesson 2.1: Data Cleaning"
+          - "Lesson 2.2: Feature Selection and Extraction"
+          - "Lesson 2.3: Data Transformation Techniques"
+  - "Unit 2: Supervised Learning":
+      - "Chapter 3: Regression Analysis":
+          - "Lesson 3.1: Linear Regression"
+          - "Lesson 3.2: Polynomial Regression"
+          - "Lesson 3.3: Regularization Methods"
+      - "Chapter 4: Classification Techniques":
+          - "Lesson 4.1: Decision Trees"
+          - "Lesson 4.2: Nearest Neighbour Methods"
+          - "Lesson 4.3: Support Vector Machines"
+          - "Lesson 4.4: Neural Networks"
+      - "Chapter 5: Model Evaluation":
+          - "Lesson 5.1: Cross-Validation"
+          - "Lesson 5.2: Overfitting and Underfitting"
+          - "Lesson 5.3: Performance Metrics"
+  - "Unit 3: Unsupervised Learning":
+      - "Chapter 6: Clustering":
+          - "Lesson 6.1: K-Means Clustering"
+          - "Lesson 6.2: Hierarchical Clustering"
+          - "Lesson 6.3: Density-Based Clustering"
+      - "Chapter 7: Dimensionality Reduction":
+          - "Lesson 7.1: Principal Component Analysis"
+          - "Lesson 7.2: Autoencoders"
+          - "Lesson 7.3: t-SNE and UMAP"
+"""
+    for chunk in fake_stream(dummy_response):
+        yield chunk
+    return
+
     for chunk in prompt_llm(prompt):
         yield chunk
 
@@ -311,7 +378,8 @@ def generate_chapter_intro(chapter, syllabus):
     prompt = f"""
 {syllabus}
 
-Write a 140 word introduction to the chapter "{chapter}".
+Write a 100 word introduction to the chapter "{chapter}".
+Ensure it is no longer than 120 words.
 """
     for chunk in prompt_llm(prompt):
         yield chunk

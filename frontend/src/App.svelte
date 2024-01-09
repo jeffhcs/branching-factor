@@ -5,13 +5,17 @@
     import Splash from "./Splash.svelte";
     import LessonModal from "./LessonModal.svelte";
 
-    import { currentPageTrigger } from "./customStore.js";
+    import { currentPageTrigger, notebookTrigger } from "./customStore.js";
     import Sidebar from "./Sidebar.svelte";
 
     let currPage = "splash";
+    let notebook_id;
 
     currentPageTrigger.subscribe((page) => {
         if (page != null) currPage = page;
+    });
+    notebookTrigger.subscribe((nb) => {
+        if (nb != null) notebook_id = nb;
     });
 </script>
 
@@ -23,11 +27,9 @@
     {#if currPage === "loading"}
         <LoadingPage />
     {/if}
-    {#if currPage === "main" || currPage === "loading"}
-        <div class:hidden={currPage != "main"} class="main-page">
-            <CoverPage />
-            <MainPrompt />
-        </div>
+    {#if currPage === "main"}
+        <CoverPage bind:notebook_id/>
+        <MainPrompt bind:notebook_id/>
     {/if}
 </main>
 

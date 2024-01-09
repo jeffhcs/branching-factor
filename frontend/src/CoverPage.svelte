@@ -1,48 +1,51 @@
 <script>
     import { onMount } from "svelte";
-    import { fade } from 'svelte/transition';3
+    import { fade } from "svelte/transition";
+    3;
     import { courseObjectTrigger } from "./customStore";
     import yaml from "js-yaml";
-    export let title = "";
-    export let intro = "";
-    export let syllabusText = "";
+    import { EndpointCaller } from "./backend.js";
 
-//     title = "Introduction to Real Analysis";
-//     intro = `
-// Focuses on the core ideas and concepts of game theory and on applications of them in economics and other social sciences. Topics may include: oligopoly, electoral competition, the theory of public goods, voting theory, the free rider problem, repeated interaction, bargaining, evolutionary equilibrium, matching and auctions.
-// How can we make collective decisions fairly? What does it mean to properly balance conflicting interests? How can we combine the well-being of individuals into a concept of societal well-being? We explore these and related ethical questions from the perspective of economic theory. A central tool is the axiomatic approach, which calls for decisions to be consistent, in precise senses, across related situations. Possible topics include: rationing problems, the Shapley value, fair division, discrimination, voting theory, foundations of utilitarianism and egalitarianism, measurement of inequality, population ethics, intergenerational equity, and concepts of equal opportunity.
-//     `
+    export let notebook_id;
+    let title = "";
+    let intro = "";
 
-    courseObjectTrigger.subscribe((course) => {
-        if (course != null) {
-            title = course.Course;
-            syllabusText = yaml.dump(course.Syllabus, {quotingType: '"'});
-            callGenerateIntroEndpoint(title, syllabusText);
-        }
-    });
-
-    let generateIntroXhr = new XMLHttpRequest();
-
-    function callGenerateIntroEndpoint(title, syllabus) {
-        generateIntroXhr.abort();
-        generateIntroXhr = new XMLHttpRequest();
-        generateIntroXhr.open(
-            "GET",
-            "http://127.0.0.1:5000/generate_intro?title=" +
-                encodeURIComponent(title) +
-                "&syllabus=" +
-                encodeURIComponent(syllabus),
-            true,
-        );
-        generateIntroXhr.onprogress = function () {
-            const raw_text = generateIntroXhr.responseText;
-            const flag = "Introduction: "
-            if (raw_text.slice(0, flag.length) === flag) {
-                intro = raw_text.slice(flag.length)
-            }
-        };
-        generateIntroXhr.send();
+    const coverEndpoint = new EndpointCaller("get_notebook_cover");
+    coverEndpoint.onDone = (responseText) => {
+        const cover = JSON.parse(responseText);
+        title = cover.title;
+        intro = cover.description;
+    };
+    $: if (notebook_id !== undefined) {
+        coverEndpoint.call({ notebook_id: notebook_id });
     }
+
+    //     title = "Introduction to Real Analysis";
+    //     intro = `
+    // Focuses on the core ideas and concepts of game theory and on applications of them in economics and other social sciences. Topics may include: oligopoly, electoral competition, the theory of public goods, voting theory, the free rider problem, repeated interaction, bargaining, evolutionary equilibrium, matching and auctions.
+    // How can we make collective decisions fairly? What does it mean to properly balance conflicting interests? How can we combine the well-being of individuals into a concept of societal well-being? We explore these and related ethical questions from the perspective of economic theory. A central tool is the axiomatic approach, which calls for decisions to be consistent, in precise senses, across related situations. Possible topics include: rationing problems, the Shapley value, fair division, discrimination, voting theory, foundations of utilitarianism and egalitarianism, measurement of inequality, population ethics, intergenerational equity, and concepts of equal opportunity.
+    // //     `
+
+    //     courseObjectTrigger.subscribe((course) => {
+    //         if (course != null) {
+    //             title = course.Course;
+    //             syllabusText = yaml.dump(course.Syllabus, {quotingType: '"'});
+    //             callGenerateIntroEndpoint(title, syllabusText);
+    //         }
+    //     });
+
+    // const notebookIntroEndpoint = new EndpointCaller("generate_intro");
+    // notebookIntroEndpoint.onProgress = (responseText) => {
+    //     const raw_text = responseText;
+    //     const flag = "Introduction: "
+    //     if (raw_text.slice(0, flag.length) === flag) {
+    //         intro = raw_text.slice(flag.length)
+    //     }
+    // };
+
+    // function callGenerateIntroEndpoint(title, syllabus) {
+    //     notebookIntroEndpoint.call({title: title, syllabus: syllabus});
+    // }
 
     function scroll() {
         window.scrollBy({
@@ -80,7 +83,9 @@
         </div>
     </div>
     {#if scrollTop === 0}
-    <a class="scroll-down" out:fade={{ duration: 200 }} on:click={scroll}>↓</a>
+        <a class="scroll-down" out:fade={{ duration: 200 }} on:click={scroll}
+            >↓</a
+        >
     {/if}
 </main>
 

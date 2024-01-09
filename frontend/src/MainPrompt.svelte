@@ -7,131 +7,33 @@
         parseSyllabusYaml,
         getChaptersForTree,
     } from "./parsing/parseSyllabus";
-    import { splashPromptTrigger, loadingTextTrigger, currentPageTrigger, courseObjectTrigger } from './customStore.js';
+    import {
+        splashPromptTrigger,
+        loadingTextTrigger,
+        currentPageTrigger,
+        courseObjectTrigger,
+    } from "./customStore.js";
+    import { EndpointCaller } from "./backend.js";
 
     let lessonTreeComponent;
+    export let notebook_id;
 
-    function parseToTreeElements(llmOutput, chaptersData) {
-        const rootKey = "ChaptersTree";
-        try {
-            const newlineCount = (llmOutput.match(/\n/g) || []).length;
-            if (newlineCount < 2) {
-                return false;
-            }
+    const treeEndpoint = new EndpointCaller("get_tree");
+    treeEndpoint.onProgress = (responseText) => {
+        // const elements = parseToTreeElements(responseText);
+        // if (elements) lessonTreeComponent.update_tree(elements);
+        // console.log(responseText);
+        const elements = JSON.parse(responseText);
+        lessonTreeComponent.update_tree(elements);
+    };
 
-            var cleanedText = llmOutput;
-
-            if (cleanedText.lastIndexOf("\n\n") > -1) {
-                cleanedText = cleanedText.substring(
-                    0,
-                    cleanedText.lastIndexOf("\n\n"),
-                );
-            } else {
-                cleanedText = cleanedText.substring(
-                    0,
-                    cleanedText.lastIndexOf("\n"),
-                );
-            }
-
-            cleanedText.trimEnd();
-
-            if (cleanedText.charAt(cleanedText.length - 1) === ":") {
-                cleanedText = cleanedText.substring(
-                    0,
-                    cleanedText.lastIndexOf("\n"),
-                );
-            }
-
-            const tree = yaml.load(cleanedText);
-
-            const elements = [];
-
-            for (const chapter in tree[rootKey]) {
-                const prerequisites = tree[rootKey][chapter];
-
-                elements.push({
-                    group: "nodes",
-                    data: { id: chapter, lessons: chaptersData[chapter] },
-                });
-
-                prerequisites.forEach((prereq) => {
-                    elements.push({
-                        group: "edges",
-                        data: { source: prereq, target: chapter },
-                    });
-                });
-            }
-
-            return elements;
-        } catch (e) {
-            console.error(llmOutput, "|", cleanedText, e);
-            return false;
-        }
+    $: if (notebook_id) {
+        treeEndpoint.call({ notebook_id: notebook_id});
     }
-    let generateTreeXhr = new XMLHttpRequest();
-    function callGenerateTreeEndpoint(chaptersData) {
-        generateTreeXhr.abort();
-        generateTreeXhr = new XMLHttpRequest();
-        generateTreeXhr.open(
-            "GET",
-            "http://127.0.0.1:5000/generate_tree?prompt=" +
-                encodeURIComponent(yaml.dump(chaptersData)),
-            true,
-        );
-        generateTreeXhr.onprogress = function () {
-            const elements = parseToTreeElements(
-                generateTreeXhr.responseText,
-                chaptersData,
-            );
-            if (elements) lessonTreeComponent.update_tree(elements);
-        };
-        generateTreeXhr.send();
-    }
-    let generateSyllabusXhr = new XMLHttpRequest();
-    function callGenerateSyllabusEndpoint(prompt) {
-        generateSyllabusXhr.abort();
-        generateSyllabusXhr = new XMLHttpRequest();
-        generateSyllabusXhr.open(
-            "GET",
-            "http://127.0.0.1:5000/generate_syllabus?prompt=" +
-                encodeURIComponent(prompt),
-            true,
-        );
-        generateSyllabusXhr.onprogress = function () {
-            // console.log(generateSyllabusXhr.responseText);
-            // const elements = parseToTreeElements(generateTreeXhr.responseText);
-            // if (elements) lessonTreeComponent.update_tree(elements);
-            syllabusText = generateSyllabusXhr.responseText;
-            loadingTextTrigger.broadcast(syllabusText);
 
-        };
-        generateSyllabusXhr.onreadystatechange = function () {
-            if (generateSyllabusXhr.readyState === XMLHttpRequest.DONE) {
-                if (generateSyllabusXhr.status === 200) {
-                    syllabus = parseSyllabusYaml(syllabusText);
-                    if (syllabus) {
-                        currentPageTrigger.broadcast("main");
-                        courseObjectTrigger.broadcast(syllabus);
-                        const chaptersPrompt = getChaptersForTree(syllabus);
-                        callGenerateTreeEndpoint(chaptersPrompt);
-                        // lessonTreeComponent.update_tree(chapters);
-                    }
-                } else {
-                    console.log("There was a problem with the request.");
-                }
-            }
-        };
-        currentPageTrigger.broadcast("loading");
-        generateSyllabusXhr.send();
-    }
     let courseNamePrompt = "";
     let syllabusText = "";
     let syllabus;
-
-    function generate() {
-        // callGenerateTreeEndpoint(courseNamePrompt);
-        callGenerateSyllabusEndpoint(courseNamePrompt);
-    }
 
     let selectedChapterData;
 
@@ -143,12 +45,6 @@
         selectedChapterData = null;
     }
 
-    splashPromptTrigger.subscribe((promptText) => {
-        if (promptText != null) {
-            courseNamePrompt = promptText;
-            generate();
-        }
-    });
 </script>
 
 <main>
@@ -166,7 +62,11 @@
         </div>
         {#if selectedChapterData}
             <div class="chapter-panel">
-                <ChapterLessonsPanel bind:chapterData={selectedChapterData} bind:syllabusText={syllabusText} on:closePanel={handleClosePanel}/>
+                <ChapterLessonsPanel
+                    bind:chapterData={selectedChapterData}
+                    bind:notebookId={notebook_id}
+                    on:closePanel={handleClosePanel}
+                />
             </div>
         {/if}
     </div>
